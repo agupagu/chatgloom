@@ -40,25 +40,27 @@ const ChatApp: React.FC = () => {
   const handleSendMessage = async (content: string) => {
     if (!content.trim()) return;
 
+    // Generate unique IDs
+    const userMessageId = uuidv4();
+    const aiMessageId = uuidv4();
+
     // Add user message
-    const userMessage: Message = { id: uuidv4(), content, type: "user" };
+    const userMessage: Message = { id: userMessageId, content, type: "user" };
+    
+    // Update state with user message and AI loading message
     setChatState((prev) => ({
       ...prev,
-      messages: [...prev.messages, userMessage],
+      messages: [
+        ...prev.messages, 
+        userMessage,
+        { id: aiMessageId, content: "", type: "ai" }
+      ],
       isLoading: true,
     }));
 
     try {
-      // Prepare conversation history
+      // Prepare conversation history - use all messages except the empty AI message we just added
       const messagesForApi = [...chatState.messages, userMessage];
-      
-      // Create a placeholder for AI response
-      const aiMessageId = uuidv4();
-      setChatState((prev) => ({
-        ...prev,
-        messages: [...prev.messages, userMessage, { id: aiMessageId, content: "", type: "ai" }],
-        isLoading: true,
-      }));
 
       // Call Perplexity API
       const response = await fetch("/api/v1/chat-completion", {
@@ -72,11 +74,20 @@ const ChatApp: React.FC = () => {
         }),
       });
 
-      const data = await response.json();
-
       if (!response.ok) {
-        throw new Error(data.error || "Failed to get a response");
+        const errorData = await response.text();
+        let errorMessage;
+        try {
+          const parsed = JSON.parse(errorData);
+          errorMessage = parsed.error || `Error: ${response.status}`;
+        } catch (e) {
+          // If JSON parsing fails, use the text directly
+          errorMessage = errorData || `Error: ${response.status}`;
+        }
+        throw new Error(errorMessage);
       }
+
+      const data = await response.json();
 
       // Update AI message with received content
       setChatState((prev) => ({
@@ -96,10 +107,10 @@ const ChatApp: React.FC = () => {
           : "Failed to communicate with Perplexity"
       );
       
-      // Remove the loading message
+      // Remove the loading AI message
       setChatState((prev) => ({
         ...prev,
-        messages: prev.messages.filter((msg) => msg.content !== ""),
+        messages: prev.messages.filter((msg) => msg.id !== aiMessageId),
         isLoading: false,
       }));
     }
@@ -138,6 +149,7 @@ const ChatApp: React.FC = () => {
             </div>
           </div>
         ) : (
+          // Use a unique ID for each message - the message's own ID
           chatState.messages.map((message) => (
             <ChatMessage
               key={message.id}

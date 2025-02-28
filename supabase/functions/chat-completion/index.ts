@@ -58,12 +58,42 @@ serve(async (req) => {
       }),
     });
 
-    const data = await response.json();
-    
+    // First check if the response is OK
     if (!response.ok) {
+      const errorText = await response.text();
+      let errorMessage;
+      
+      try {
+        // Try to parse the error as JSON
+        const errorJson = JSON.parse(errorText);
+        errorMessage = errorJson.error?.message || 'Unknown API error';
+      } catch (e) {
+        // If it's not valid JSON, use the text directly
+        errorMessage = errorText || `Error: ${response.status}`;
+      }
+      
       return new Response(
-        JSON.stringify({ error: data.error?.message || 'Unknown error occurred' }),
+        JSON.stringify({ error: errorMessage }),
         { status: response.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // If response is OK, safely parse the JSON response
+    const responseText = await response.text();
+    let data;
+    try {
+      data = JSON.parse(responseText);
+    } catch (e) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid JSON response from API' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+      return new Response(
+        JSON.stringify({ error: 'Unexpected API response format' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
@@ -76,7 +106,7 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error in chat-completion function:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: error.message || 'Unknown server error' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
