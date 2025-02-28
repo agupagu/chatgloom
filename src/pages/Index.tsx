@@ -16,16 +16,16 @@ const ChatApp: React.FC = () => {
   });
   
   const [apiKey, setApiKey] = useState<string>(() => {
-    return localStorage.getItem("openai-api-key") || "";
+    return localStorage.getItem("perplexity-api-key") || "";
   });
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (apiKey) {
-      localStorage.setItem("openai-api-key", apiKey);
+      localStorage.setItem("perplexity-api-key", apiKey);
     } else {
-      localStorage.removeItem("openai-api-key");
+      localStorage.removeItem("perplexity-api-key");
     }
   }, [apiKey]);
 
@@ -60,7 +60,7 @@ const ChatApp: React.FC = () => {
         isLoading: true,
       }));
 
-      // Call OpenAI API
+      // Call Perplexity API
       const response = await fetch("/api/v1/chat-completion", {
         method: "POST",
         headers: {
@@ -93,7 +93,7 @@ const ChatApp: React.FC = () => {
       toast.error(
         error instanceof Error
           ? error.message
-          : "Failed to communicate with OpenAI"
+          : "Failed to communicate with Perplexity"
       );
       
       // Remove the loading message
@@ -117,7 +117,7 @@ const ChatApp: React.FC = () => {
       <ApiKeyDialog apiKey={apiKey} onApiKeyChange={setApiKey} />
       
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-xl font-semibold text-center flex-grow">ChatGloom</h1>
+        <h1 className="text-xl font-semibold text-center flex-grow">PerplexChat</h1>
         <Button
           variant="outline"
           size="icon"
@@ -133,7 +133,7 @@ const ChatApp: React.FC = () => {
         {chatState.messages.length === 0 ? (
           <div className="flex items-center justify-center h-full">
             <div className="text-center text-muted-foreground">
-              <p className="mb-2">Welcome to ChatGloom</p>
+              <p className="mb-2">Welcome to PerplexChat</p>
               <p className="text-sm">Start a conversation by typing a message below.</p>
             </div>
           </div>
@@ -157,7 +157,7 @@ const ChatApp: React.FC = () => {
         />
         {!apiKey && (
           <p className="text-xs text-muted-foreground mt-2 text-center">
-            Please set your OpenAI API key in settings to start chatting.
+            Please set your Perplexity API key in settings to start chatting.
           </p>
         )}
       </div>

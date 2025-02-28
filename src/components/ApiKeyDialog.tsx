@@ -37,9 +37,9 @@ const ApiKeyDialog: React.FC<ApiKeyDialogProps> = ({ apiKey, onApiKeyChange }) =
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>OpenAI API Key</DialogTitle>
+          <DialogTitle>Perplexity API Key</DialogTitle>
           <DialogDescription>
-            Enter your OpenAI API key to use the chat functionality.
+            Enter your Perplexity API key to use the chat functionality.
             Your API key is stored locally and never sent to our servers.
           </DialogDescription>
         </DialogHeader>
@@ -51,7 +51,7 @@ const ApiKeyDialog: React.FC<ApiKeyDialogProps> = ({ apiKey, onApiKeyChange }) =
               type="password"
               value={inputApiKey}
               onChange={(e) => setInputApiKey(e.target.value)}
-              placeholder="sk-..."
+              placeholder="pplx-..."
             />
           </div>
         </div>
