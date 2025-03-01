@@ -62,40 +62,58 @@ const ChatApp: React.FC = () => {
       // Prepare conversation history - use all messages except the empty AI message we just added
       const messagesForApi = [...chatState.messages, userMessage].filter(msg => msg.content !== "");
 
-      // Call Perplexity API
-      const response = await fetch("/api/v1/chat-completion", {
+      // Call Perplexity API directly instead of through a server endpoint
+      const response = await fetch("https://api.perplexity.ai/chat/completions", {
         method: "POST",
         headers: {
+          "Authorization": `Bearer ${apiKey}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          apiKey,
-          messages: messagesForApi,
+          model: "llama-3.1-sonar-small-128k-online",
+          messages: messagesForApi.map(msg => ({
+            role: msg.type === "user" ? "user" : "assistant",
+            content: msg.content
+          })),
+          temperature: 0.2,
+          top_p: 0.9,
+          max_tokens: 1000,
+          return_images: false,
+          return_related_questions: false,
+          search_domain_filter: ['perplexity.ai'],
+          search_recency_filter: 'month',
+          frequency_penalty: 1,
+          presence_penalty: 0
         }),
       });
 
-      // Check content type to ensure we're getting JSON
-      const contentType = response.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/json')) {
-        // If not JSON, get the text and display as error
-        const errorText = await response.text();
-        console.error("Non-JSON response:", errorText);
-        throw new Error("Invalid response format from server");
-      }
-
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || `Error: ${response.status}`);
+        const errorText = await response.text();
+        let errorMessage;
+        try {
+          const errorJson = JSON.parse(errorText);
+          errorMessage = errorJson.error?.message || 'Unknown API error';
+        } catch (e) {
+          // If it's not valid JSON, use the text directly
+          errorMessage = errorText || `Error: ${response.status}`;
+        }
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
+      
+      if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+        throw new Error('Unexpected API response format');
+      }
+
+      const generatedText = data.choices[0].message.content;
 
       // Update AI message with received content
       setChatState((prev) => ({
         ...prev,
         messages: prev.messages.map((msg) =>
           msg.id === aiMessageId
-            ? { ...msg, content: data.generatedText }
+            ? { ...msg, content: generatedText }
             : msg
         ),
         isLoading: false,
