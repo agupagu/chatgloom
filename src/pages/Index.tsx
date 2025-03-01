@@ -62,6 +62,13 @@ const ChatApp: React.FC = () => {
       // Prepare conversation history - use all messages except the empty AI message we just added
       const messagesForApi = [...chatState.messages, userMessage].filter(msg => msg.content !== "");
 
+      console.log("Sending to Perplexity API:", {
+        messages: messagesForApi.map(msg => ({
+          role: msg.type === "user" ? "user" : "assistant",
+          content: msg.content
+        }))
+      });
+
       // Call Perplexity API directly instead of through a server endpoint
       const response = await fetch("https://api.perplexity.ai/chat/completions", {
         method: "POST",
@@ -100,7 +107,14 @@ const ChatApp: React.FC = () => {
         throw new Error(errorMessage);
       }
 
+      // First check if we got a valid JSON response
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        throw new Error(`Invalid content type: ${contentType}. Expected JSON.`);
+      }
+
       const data = await response.json();
+      console.log("API Response:", data);
       
       if (!data.choices || !data.choices[0] || !data.choices[0].message) {
         throw new Error('Unexpected API response format');
