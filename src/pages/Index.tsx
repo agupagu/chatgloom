@@ -60,7 +60,7 @@ const ChatApp: React.FC = () => {
 
     try {
       // Prepare conversation history - use all messages except the empty AI message we just added
-      const messagesForApi = [...chatState.messages, userMessage];
+      const messagesForApi = [...chatState.messages, userMessage].filter(msg => msg.content !== "");
 
       // Call Perplexity API
       const response = await fetch("/api/v1/chat-completion", {
@@ -74,17 +74,18 @@ const ChatApp: React.FC = () => {
         }),
       });
 
+      // Check content type to ensure we're getting JSON
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        // If not JSON, get the text and display as error
+        const errorText = await response.text();
+        console.error("Non-JSON response:", errorText);
+        throw new Error("Invalid response format from server");
+      }
+
       if (!response.ok) {
-        const errorData = await response.text();
-        let errorMessage;
-        try {
-          const parsed = JSON.parse(errorData);
-          errorMessage = parsed.error || `Error: ${response.status}`;
-        } catch (e) {
-          // If JSON parsing fails, use the text directly
-          errorMessage = errorData || `Error: ${response.status}`;
-        }
-        throw new Error(errorMessage);
+        const errorData = await response.json();
+        throw new Error(errorData.error || `Error: ${response.status}`);
       }
 
       const data = await response.json();
