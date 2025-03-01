@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import { toast } from "sonner";
 import { v4 as uuidv4 } from "uuid";
@@ -60,13 +59,17 @@ const ChatApp: React.FC = () => {
 
     try {
       // Prepare conversation history - use all messages except the empty AI message we just added
-      const messagesForApi = [...chatState.messages, userMessage].filter(msg => msg.content !== "");
+      const currentMessages = [...chatState.messages, userMessage].filter(msg => 
+        !(msg.id === aiMessageId || msg.content === "")
+      );
+
+      const messagesForApi = currentMessages.map(msg => ({
+        role: msg.type === "user" ? "user" : "assistant",
+        content: msg.content
+      }));
 
       console.log("Sending to Perplexity API:", {
-        messages: messagesForApi.map(msg => ({
-          role: msg.type === "user" ? "user" : "assistant",
-          content: msg.content
-        }))
+        messages: messagesForApi
       });
 
       // Call Perplexity API directly instead of through a server endpoint
@@ -78,10 +81,7 @@ const ChatApp: React.FC = () => {
         },
         body: JSON.stringify({
           model: "llama-3.1-sonar-small-128k-online",
-          messages: messagesForApi.map(msg => ({
-            role: msg.type === "user" ? "user" : "assistant",
-            content: msg.content
-          })),
+          messages: messagesForApi,
           temperature: 0.2,
           top_p: 0.9,
           max_tokens: 1000,
