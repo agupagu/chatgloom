@@ -15,9 +15,6 @@ const ChatApp: React.FC = () => {
   const { chatState, handleSendMessage, clearChat } = useChat(apiKey);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Check if we have an API key either from localStorage or environment variables
-  const hasApiKey = Boolean(apiKey || import.meta.env.VITE_PERPLEXITY_API_KEY);
-
   useEffect(() => {
     if (apiKey) {
       localStorage.setItem("perplexity-api-key", apiKey);
@@ -71,11 +68,11 @@ const ChatApp: React.FC = () => {
       <div className="mt-auto">
         <ChatInput
           onSendMessage={handleSendMessage}
-          disabled={chatState.isLoading || !hasApiKey}
+          disabled={chatState.isLoading || !apiKey}
         />
-        {!hasApiKey && (
+        {!apiKey && (
           <p className="text-xs text-muted-foreground mt-2 text-center">
-            Please set your Perplexity API key in settings or provide it as an environment variable.
+            Please set your Perplexity API key in settings to start chatting.
           </p>
         )}
       </div>

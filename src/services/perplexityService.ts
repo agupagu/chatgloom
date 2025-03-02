@@ -20,17 +20,10 @@ export const sendMessageToPerplexity = async (
 ): Promise<string> => {
   console.log("Sending to Perplexity API:", { messages });
 
-  // Try to use environment variable if available, otherwise use provided apiKey
-  const perplexityApiKey = import.meta.env.VITE_PERPLEXITY_API_KEY || apiKey;
-  
-  if (!perplexityApiKey) {
-    throw new Error("No Perplexity API key provided");
-  }
-
   const response = await fetch("https://api.perplexity.ai/chat/completions", {
     method: "POST",
     headers: {
-      "Authorization": `Bearer ${perplexityApiKey}`,
+      "Authorization": `Bearer ${apiKey}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({

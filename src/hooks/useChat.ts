@@ -43,10 +43,7 @@ export const useChat = (apiKey: string) => {
 
       const messagesForApi = convertMessagesToPerplexityFormat(currentMessages);
       
-      // Try to use the environment variable first, fallback to user-provided apiKey
-      const effectiveApiKey = import.meta.env.VITE_PERPLEXITY_API_KEY || apiKey;
-
-      const generatedText = await sendMessageToPerplexity(messagesForApi, effectiveApiKey);
+      const generatedText = await sendMessageToPerplexity(messagesForApi, apiKey);
 
       // Update AI message with received content
       setChatState((prev) => ({
