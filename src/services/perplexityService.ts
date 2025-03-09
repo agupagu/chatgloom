@@ -12,12 +12,18 @@ export interface PerplexityResponse {
       content: string;
     };
   }[];
+  citations?: string[];
+}
+
+export interface PerplexityResult {
+  content: string;
+  citations?: string[];
 }
 
 export const sendMessageToPerplexity = async (
   messages: PerplexityMessage[],
   apiKey: string
-): Promise<string> => {
+): Promise<PerplexityResult> => {
   console.log("Sending to Perplexity API:", { messages });
 
   // Add system prompt for Singapore financial context
@@ -109,7 +115,10 @@ export const sendMessageToPerplexity = async (
     throw new Error('Unexpected API response format');
   }
 
-  return data.choices[0].message.content;
+  return {
+    content: data.choices[0].message.content,
+    citations: data.citations
+  };
 };
 
 export const convertMessagesToPerplexityFormat = (messages: Message[]): PerplexityMessage[] => {

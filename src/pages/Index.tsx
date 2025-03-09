@@ -58,6 +58,7 @@ const ChatApp: React.FC = () => {
               key={message.id}
               content={message.content}
               type={message.type}
+              citations={message.citations}
               isLoading={chatState.isLoading && message.content === ""}
             />
           ))

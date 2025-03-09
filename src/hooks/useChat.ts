@@ -43,14 +43,14 @@ export const useChat = (apiKey: string) => {
 
       const messagesForApi = convertMessagesToPerplexityFormat(currentMessages);
       
-      const generatedText = await sendMessageToPerplexity(messagesForApi, apiKey);
+      const result = await sendMessageToPerplexity(messagesForApi, apiKey);
 
-      // Update AI message with received content
+      // Update AI message with received content and citations
       setChatState((prev) => ({
         ...prev,
         messages: prev.messages.map((msg) =>
           msg.id === aiMessageId
-            ? { ...msg, content: generatedText }
+            ? { ...msg, content: result.content, citations: result.citations }
             : msg
         ),
         isLoading: false,
