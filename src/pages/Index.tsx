@@ -32,7 +32,7 @@ const ChatApp: React.FC = () => {
       <ApiKeyDialog apiKey={apiKey} onApiKeyChange={setApiKey} />
       
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-xl font-semibold text-center flex-grow">PerplexChat</h1>
+        <h1 className="text-xl font-semibold text-center flex-grow">SgFinance AI Chatbot</h1>
         <Button
           variant="outline"
           size="icon"
