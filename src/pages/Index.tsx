@@ -48,8 +48,8 @@ const ChatApp: React.FC = () => {
         {chatState.messages.length === 0 ? (
           <div className="flex items-center justify-center h-full">
             <div className="text-center text-muted-foreground">
-              <p className="mb-2">Welcome to PerplexChat</p>
-              <p className="text-sm">Start a conversation by typing a message below.</p>
+              <p className="mb-2">Welcome to SgFinance AI Chatbot</p>
+              <p className="text-sm">Start a conversation about anything Sg-Fi related by typing a message below!</p>
             </div>
           </div>
         ) : (
