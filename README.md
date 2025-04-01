@@ -1,69 +1,75 @@
-# Welcome to your Lovable project
+# 💰 ChatGloom — Singapore Finance AI Assistant
 
-## Project info
+**ChatGloom** is an intelligent web-based assistant designed to help Singaporeans navigate personal and national finance topics effortlessly. It uses [Perplexity AI’s API](https://www.perplexity.ai/) under the hood and is optimised through prompt engineering techniques to return highly relevant, trustworthy responses—always with cited sources.
 
-**URL**: https://lovable.dev/projects/c07cbb7f-f303-490f-a4c6-1c5dd72638e4
+---
 
-## How can I edit this code?
+## 🚀 Features
 
-There are several ways of editing your application.
+- **Singapore-Focused Finance Queries**  
+  Tailored to understand and respond to queries about CPF, taxes, housing grants, GST, investments, budgeting, and more.
 
-**Use Lovable**
+- **Powered by Perplexity API**  
+  Uses Perplexity's retrieval-augmented generation (RAG) pipeline to ensure information is sourced, recent, and factually grounded.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/c07cbb7f-f303-490f-a4c6-1c5dd72638e4) and start prompting.
+- **Prompt Engineering for Relevance**  
+  A carefully constructed system prompt optimises response accuracy and relevance by:
+  - Encouraging Singapore-specific context recognition  
+  - Filtering out generic or non-actionable content  
+  - Always returning sources in the form of URLs or documents
 
-Changes made via Lovable will be committed automatically to this repo.
+- **Modern Frontend Experience**  
+  Lightweight and responsive UI built for a seamless, mobile-first experience.
 
-**Use your preferred IDE**
+---
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## 🛠️ Technical Architecture
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### ⚙️ Backend
 
-Follow these steps:
+- **API Integration**
+  - Communicates with Perplexity’s public or partner API (authenticated endpoint) to fetch answers.
+  - Query wrapping: raw user input is programmatically rephrased with system-level instructions to bias answers toward local financial relevance.
+  
+- **Prompt Engineering**
+  - A static system prompt is appended to each user query.
+  - The prompt includes meta-directives like:
+    - “Limit scope to Singapore’s financial ecosystem”
+    - “Always include source links”
+    - “Avoid speculative or general financial advice”
+  
+- **Error Handling**
+  - Graceful fallbacks for no response or empty result sets  
+  - Caching of frequent queries to minimise token usage and reduce latency
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+### 🖥️ Frontend
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+- Built with **Next.js** (or specify your stack)  
+- Uses **Tailwind CSS** for UI styling  
+- Minimalist chat interface with:
+  - Input field  
+  - Loading animation  
+  - Scrollable chat history  
+  - Link previews for cited sources
 
-# Step 3: Install the necessary dependencies.
-npm i
+---
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+## 🧠 Why Perplexity?
 
-**Edit a file directly in GitHub**
+Perplexity AI provides high-quality, up-to-date responses using web search, citations, and RAG. This makes it especially suitable for:
+- Real-time financial policy updates  
+- Reference to government portals (e.g. IRAS, CPF Board, HDB)  
+- Investment or taxation trends based on current laws
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+---
 
-**Use GitHub Codespaces**
+## 📦 Project Structure
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with .
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/c07cbb7f-f303-490f-a4c6-1c5dd72638e4) and click on Share -> Publish.
-
-## I want to use a custom domain - is that possible?
-
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+```bash
+/
+├── pages/               # Next.js page routes
+├── components/          # UI components like ChatBox, MessageBubble
+├── utils/               # API and prompt utilities
+├── styles/              # Tailwind configuration
+├── public/              # Static assets
+└── README.md
